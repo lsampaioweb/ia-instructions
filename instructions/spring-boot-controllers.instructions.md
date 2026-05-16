@@ -11,8 +11,10 @@ applyTo: "**/*Controller.java"
 - Keep controllers thin: delegate all business logic to the `@Service` layer
 - Use `Optional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build())` for single-resource GET
 - Accept `Pageable` and return `PagedModel<EntityModel<T>>` for collection endpoints
+- Use dedicated request DTOs (e.g. `CreateUserRequest`) for `@RequestBody`; never bind domain entities directly
 - Annotate `@RequestBody` with `@Valid` for automatic bean validation
 - Return a `Location` header on POST using `UriComponentsBuilder`
+- Return `204 No Content` on successful DELETE; return `404 Not Found` when the resource does not exist
 
 ## Example
 
@@ -35,8 +37,8 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<User> create(@Valid @RequestBody User user, UriComponentsBuilder uriBuilder) {
-    User created = userService.create(user);
+  public ResponseEntity<User> create(@Valid @RequestBody CreateUserRequest request, UriComponentsBuilder uriBuilder) {
+    User created = userService.create(request);
     URI location = getLocation(uriBuilder, "/{id}", created.getId());
     return ResponseEntity.created(Objects.requireNonNull(location)).body(created);
   }
@@ -44,7 +46,7 @@ public class UserController {
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     boolean removed = userService.delete(id);
-    return removed ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    return removed ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
   }
 
   private URI getLocation(UriComponentsBuilder uriBuilder, String path, Object... uriVariableValues) {
