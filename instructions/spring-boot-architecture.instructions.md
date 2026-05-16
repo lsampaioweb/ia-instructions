@@ -1,12 +1,13 @@
 ---
 description: "Use when creating or reviewing Spring Boot package structure, feature modules, dependency flow, or Java visibility. Covers package-by-feature architecture, layer boundaries, and avoiding overly broad public visibility."
+applyTo: "**/*.java"
 ---
 
 # Spring Boot Architecture Conventions
 
 - Organize code by feature or domain, not by technical layer
 - Prefer packages like `user`, `product`, `order`, `config`, or `integration`, not generic `controller`, `service`, or `repository` root packages
-- Keep related classes together inside the same feature package, for example `UserController`, `UserService`, `UserRepository`, DTOs, and exceptions in `user/`
+- Keep related classes together inside the same feature package, for example `UserController`, `UserService`, `UserMapper`, DTOs, and exceptions in `user/`
 - Respect one-way dependency flow: controller -> service -> repository or integration client
 - A class should call only the next layer in the chain; skip-layer access is not allowed
 - Use the narrowest visibility that works: `private` first, package-private by default for internal classes and methods, `public` only for the API that must be exposed outside the package
@@ -24,7 +25,7 @@ description: "Use when creating or reviewing Spring Boot package structure, feat
 com.learning.restapi.user/
 ├── UserController.java
 ├── UserService.java
-├── UserRepository.java
+├── UserMapper.java
 ├── User.java
 ├── CreateUserRequest.java
 └── UserNotFoundException.java
@@ -33,9 +34,9 @@ com.learning.restapi.user/
 ## Dependency Rule
 
 - `UserController` can call `UserService`
-- `UserService` can call `UserRepository`
+- `UserService` can call `UserMapper`
 - `UserService` can call an integration client when that client is the next infrastructure boundary
-- `UserController` should not call `UserRepository` directly
+- `UserController` should not call `UserMapper` directly
 - `UserController` should not call integration clients directly
-- `UserRepository` should not know about web concerns such as `ResponseEntity`
-- `UserRepository` and integration clients should not call controllers or depend on web-layer classes
+- `UserMapper` should not know about web concerns such as `ResponseEntity`
+- `UserMapper` and integration clients should not call controllers or depend on web-layer classes
