@@ -1,6 +1,6 @@
 ---
 description: "Use when creating or reviewing Spring Boot i18n configuration, MessageSource usage, locale resolution, or message properties files. Covers message file structure, locale resolution, MessageSourceHolder, and controller usage."
-applyTo: "**/*i18n*,**/*MessageSource*,**/*LocaleResolver*,**/i18n/**"
+applyTo: "**/{*MessageSource*,*LocaleResolver*,*i18n*}.java"
 ---
 
 # Spring Boot i18n Conventions
@@ -17,7 +17,8 @@ spring:
 - Provide at least `messages.properties` (default/English) and `messages_pt_BR.properties`
 - Use `MessageSource` with constructor injection to resolve messages in controllers and services
 - Resolve the current locale with `LocaleContextHolder.getLocale()` via a private helper method
-- Implement a custom `LocaleResolver` extending `AcceptHeaderLocaleResolver` to support `Accept-Language` header and `?lang=` URL parameter
+- Resolve locale from the `Accept-Language` request header; this is the preferred mechanism
+- The `?lang=` URL query parameter is supported as a convenience for testing only; do not rely on it in production as it can cause cache-poisoning in reverse proxies
 - Register the custom `LocaleResolver` as a `@Bean` inside a `@Configuration` class
 
 ## Controller Usage Example
@@ -33,8 +34,9 @@ public class GreetingController {
   }
 
   @GetMapping("/greet")
-  public String greet(@RequestParam(defaultValue = "User") String name) {
-    return messageSource.getMessage("greeting.message", new Object[] { name }, getLocale());
+  public ResponseEntity<String> greet(@RequestParam(defaultValue = "User") String name) {
+    String message = messageSource.getMessage("greeting.message", new Object[] { name }, getLocale());
+    return ResponseEntity.ok(message);
   }
 
   private Locale getLocale() {
