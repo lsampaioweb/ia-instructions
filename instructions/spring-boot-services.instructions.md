@@ -22,30 +22,33 @@ applyTo: "**/*Service.java"
 @Service
 class UserService {
 
-  private List<User> users = new ArrayList<>();
-  private AtomicLong idCounter = new AtomicLong();
+  private final UserMapper userMapper;
 
-  List<User> findAll() {
-    return users;
+  UserService(UserMapper userMapper) {
+    this.userMapper = userMapper;
   }
 
-  User findById(Long id) {
-    Optional<User> entity = users.stream().filter(getById(id)).findFirst();
+  List<User> findAll() {
+    return userMapper.findAll();
+  }
 
-    if (entity.isPresent()) {
-      return entity.get();
-    } else {
-      throw new UserNotFoundException(id);
+  Optional<User> findById(Long id) {
+    return Optional.ofNullable(userMapper.findById(id));
+  }
+
+  User create(CreateUserRequest request) {
+    if (userMapper.existsByEmail(request.getEmail())) {
+      throw new UserAlreadyExistsException(request.getName(), request.getEmail());
     }
+    User user = new User(request.getName(), request.getEmail());
+    userMapper.insert(user);
+    return user;
   }
 
   boolean delete(Long id) {
-    User entity = findById(id);
-    return users.remove(entity);
-  }
-
-  private Predicate<? super User> getById(Long id) {
-    return u -> u.getId().equals(id);
+    Optional<User> entity = findById(id);
+    entity.ifPresent(u -> userMapper.deleteById(u.getId()));
+    return entity.isPresent();
   }
 }
 ```
