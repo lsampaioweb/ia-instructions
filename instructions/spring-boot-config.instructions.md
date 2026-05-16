@@ -1,0 +1,81 @@
+---
+description: "Use when creating or reviewing Spring Boot configuration classes, @ConfigurationProperties, @Value usage, or application.yml structure. Covers typed config, profile-specific files, and secret externalization."
+applyTo: "**/{*Config,*Configuration,*Properties}.java"
+---
+
+# Spring Boot Configuration Conventions
+
+- Use `application.yml` as the primary configuration file; avoid `application.properties`
+- Use profile-specific override files (`application-dev.yml`, `application-prod.yml`) for environment differences
+- Prefer `@ConfigurationProperties` over `@Value` for groups of related settings; bind to a typed class
+- Use `@Value` only for a single isolated property that does not belong to a larger config group
+- Annotate `@ConfigurationProperties` classes with `@ConfigurationPropertiesScan` or register them explicitly
+- Never hardcode credentials, tokens, or secrets; inject them via environment variables using `${ENV_VAR_NAME}`
+- Keep `@Configuration` classes focused on one concern (security, messaging, persistence, web, etc.)
+- Do not scatter `@Bean` definitions across unrelated classes; each `@Configuration` class owns its own beans
+
+## @ConfigurationProperties Example
+
+```java
+@ConfigurationProperties(prefix = "app.jwt")
+public record JwtProperties(
+    String secret,
+    long expirationSeconds
+) {}
+```
+
+```yaml
+# application.yml
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration-seconds: 3600
+```
+
+Enable scanning in the main class or a configuration class:
+
+```java
+@SpringBootApplication
+@ConfigurationPropertiesScan
+public class Application {
+  public static void main(String[] args) {
+    SpringApplication.run(Application.class, args);
+  }
+}
+```
+
+## @Value Usage (single property only)
+
+```java
+@Value("${app.feature.enabled:false}")
+private boolean featureEnabled;
+```
+
+## Profile-Based Configuration
+
+```yaml
+# application.yml — shared defaults
+server:
+  port: 8080
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+```
+
+```yaml
+# application-dev.yml — dev overrides
+server:
+  error:
+    include-stacktrace: always
+logging:
+  level:
+    root: DEBUG
+```
+
+## Secrets Rule
+
+- All secrets must use `${ENV_VAR}` syntax in configuration files
+- Never commit real credentials to any configuration file, even in comments
+- Document required environment variables in the project `README.md`
