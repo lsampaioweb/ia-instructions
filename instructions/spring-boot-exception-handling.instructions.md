@@ -1,30 +1,30 @@
 ---
 description: "Use when creating or reviewing Spring Boot exception handling, custom exceptions, ErrorResponse structure, or @RestControllerAdvice. Covers centralized error handling, domain exceptions, stacktrace exposure, and validation errors."
-applyTo: "**/*Exception.java,**/*Advice.java,**/*ErrorResponse.java"
+applyTo: "**/{*Exception,*Advice,*ErrorResponse}.java"
 ---
 
 # Spring Boot Exception Handling Conventions
 
 - Centralize all exception handling in a single `@RestControllerAdvice` class
-- Map each domain exception to a specific HTTP status using `@ExceptionHandler` and `@ResponseStatus`
+- Embed the HTTP status inside each domain exception; do not hardcode status codes in the advice
 - Always include a catch-all `@ExceptionHandler(Exception.class)` mapped to HTTP 500
 - Return a consistent `ErrorResponse` DTO from every exception handler
 - Control stacktrace exposure via `server.error.include-stacktrace` in `application.yml`; never expose it by default, only in dev profiles
-- Handle `MethodArgumentNotValidException` separately and return a list of field-level validation errors
+- Handle `MethodArgumentNotValidException` separately and return field-level validation errors inside `ErrorResponse`
 
 ## Custom Exceptions
 
 - All domain exceptions extend a shared abstract base class that extends `RuntimeException`
-- Each exception stores a message key (String) and arguments (Object[]) as private fields
-- Domain-specific exceptions pass only the key and arguments; message resolution happens in `@RestControllerAdvice`
+- Each exception stores a message key (String), arguments (Object[]), and an `HttpStatus` as private fields
+- Domain-specific exceptions pass the key, arguments, and status; message resolution happens in `@RestControllerAdvice`
 - Exceptions are pure data holders with no Spring/MessageSource dependencies
 
 ## ErrorResponse Structure
 
 ```java
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
   private LocalDateTime timestamp;
   private int status;
@@ -32,6 +32,9 @@ public class ErrorResponse {
   private String message;
   private String path;
   private String trace;
+  private List<FieldViolation> fieldErrors;
+
+  public record FieldViolation(String field, String message) {}
 }
 ```
 
@@ -42,21 +45,30 @@ public class ErrorResponse {
 public abstract class CustomException extends RuntimeException {
   private final String messageKey;
   private final Object[] args;
+  private final HttpStatus httpStatus;
 
-  protected CustomException(String messageKey, Object[] args) {
+  protected CustomException(String messageKey, Object[] args, HttpStatus httpStatus) {
     super(messageKey); // Store key as message for logging
     this.messageKey = messageKey;
-    this.args = args;
+    this.args = args != null ? args : new Object[0];
+    this.httpStatus = httpStatus;
   }
 
   public String getMessageKey() { return messageKey; }
   public Object[] getArgs() { return args; }
+  public HttpStatus getHttpStatus() { return httpStatus; }
 }
 
-// Domain-specific exceptions
+// Domain-specific exceptions — each carries its own HTTP status
 public class UserNotFoundException extends CustomException {
   public UserNotFoundException(Long id) {
-    super("user.notfound", new Object[] { id });
+    super("user.notfound", new Object[] { id }, HttpStatus.NOT_FOUND);
+  }
+}
+
+public class UserAlreadyExistsException extends CustomException {
+  public UserAlreadyExistsException(String name, String email) {
+    super("user.exists", new Object[] { name, email }, HttpStatus.CONFLICT);
   }
 }
 ```
@@ -76,15 +88,14 @@ public class ExceptionHandlingAdvice {
   }
 
   @ExceptionHandler(CustomException.class)
-  @ResponseStatus(HttpStatus.NOT_FOUND) // or BAD_REQUEST, etc. depending on exception type
-  public ErrorResponse handleCustomException(CustomException ex, HttpServletRequest request) {
-    // Resolve message key + args to localized text
+  public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex, HttpServletRequest request) {
     String localizedMessage = messageSource.getMessage(
         ex.getMessageKey(),
         ex.getArgs(),
         LocaleContextHolder.getLocale()
     );
-    return newErrorResponse(localizedMessage, request, HttpStatus.NOT_FOUND, ex);
+    ErrorResponse body = newErrorResponse(localizedMessage, request, ex.getHttpStatus(), ex);
+    return ResponseEntity.status(ex.getHttpStatus()).body(body);
   }
 
   @ExceptionHandler(Exception.class)
@@ -94,15 +105,26 @@ public class ExceptionHandlingAdvice {
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<Object> handleValidation(MethodArgumentNotValidException ex) {
-    return ResponseEntity.badRequest()
-        .body(ex.getFieldErrors().stream().map(FieldsWithError::new).toList());
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    ErrorResponse body = newErrorResponse("Validation failed", request, HttpStatus.BAD_REQUEST, ex);
+    body.setFieldErrors(ex.getFieldErrors().stream()
+        .map(fe -> new ErrorResponse.FieldViolation(fe.getField(), fe.getDefaultMessage()))
+        .toList());
+    return body;
   }
 
-  private record FieldsWithError(String field, String message) {
-    public FieldsWithError(FieldError error) {
-      this(error.getField(), error.getDefaultMessage());
+  private ErrorResponse newErrorResponse(String message, HttpServletRequest request, HttpStatus status, Exception ex) {
+    ErrorResponse response = new ErrorResponse();
+    response.setTimestamp(LocalDateTime.now());
+    response.setStatus(status.value());
+    response.setError(status.getReasonPhrase());
+    response.setMessage(message);
+    response.setPath(request.getRequestURI());
+    if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+      response.setTrace(Arrays.toString(ex.getStackTrace()));
     }
+    return response;
   }
 }
 ```
