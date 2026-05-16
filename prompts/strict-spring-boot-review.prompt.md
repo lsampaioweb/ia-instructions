@@ -13,19 +13,31 @@ Review the provided Spring Boot code using these repository conventions:
 - [Spring Boot architecture instructions](../instructions/spring-boot-architecture.instructions.md)
 - [Spring Boot controller instructions](../instructions/spring-boot-controllers.instructions.md)
 - [Spring Boot service instructions](../instructions/spring-boot-services.instructions.md)
+- [Spring Boot repository instructions](../instructions/spring-boot-repositories.instructions.md)
+- [Spring Boot DTO instructions](../instructions/spring-boot-dto.instructions.md)
+- [Spring Boot exception handling instructions](../instructions/spring-boot-exception-handling.instructions.md)
+- [Spring Boot configuration instructions](../instructions/spring-boot-config.instructions.md)
+- [Spring Boot i18n instructions](../instructions/spring-boot-i18n.instructions.md)
+- [Spring Boot logging instructions](../instructions/spring-boot-logging.instructions.md)
+- [Spring Boot testing instructions](../instructions/spring-boot-testing.instructions.md)
 
 Perform a strict review. Be direct and precise.
 
 Check specifically for:
 
 1. Package-by-feature structure instead of generic layer packages.
-2. One-way dependency flow: controller -> service -> repository or integration client.
+2. One-way dependency flow: controller -> service -> mapper or integration client.
 3. Overuse of `public` where package-private or `private` is more appropriate.
 4. Field injection or unnecessary framework coupling.
 5. Business logic leaking into controllers.
-6. Incorrect HTTP patterns, especially missing `ResponseEntity<T>` or missing `Location` header handling on POST.
+6. Incorrect HTTP patterns: missing `ResponseEntity<T>`, wrong DELETE status (must be 204), missing `Location` header on POST.
 7. Service classes reaching across layers or skipping the next dependency in the chain.
-8. Violations of the Spring Boot coding conventions documented in the linked skill and instructions.
+8. Direct use of domain entities as `@RequestBody`; dedicated request DTOs must be used.
+9. Hardcoded HTTP status codes in the advice instead of reading from the exception.
+10. SQL embedded in Java annotations instead of external XML mapper files.
+11. PII or secrets logged at any level.
+12. `ErrorResponse` missing `@JsonInclude(NON_NULL)`, leaking null fields to the client.
+13. Violations of any other Spring Boot coding conventions documented in the linked files above.
 
 ## Output
 
