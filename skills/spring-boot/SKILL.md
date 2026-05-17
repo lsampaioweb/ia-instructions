@@ -31,8 +31,10 @@ argument-hint: 'Touched files, target layer(s), and requested action (implement,
 - Validate mapper usage and SQL placement against Repositories instructions.
 - Validate error contract and status propagation against Exception Handling instructions.
 - Validate configuration style and secret externalization against Configuration instructions.
+- Validate authentication, authorization, CORS, and secret handling against Security instructions.
 - Validate logging hygiene and PII handling against Logging instructions.
 - Validate test scope and naming against Testing instructions.
+- Validate container hardening and runtime defaults against Podman Container instructions when container files are touched.
 
 ## Guardrails
 - Do not introduce hidden cross-service database access.
@@ -51,5 +53,7 @@ These instruction files are applied automatically to matching files and cover ad
 - [i18n](../../instructions/spring-boot-i18n.instructions.md) — MessageSource, locale resolution
 - [Logging](../../instructions/spring-boot-logging.instructions.md) — Slf4j, log levels, PII
 - [Repositories](../../instructions/spring-boot-repositories.instructions.md) — MyBatis mappers, XML files, null handling
+- [Security](../../instructions/spring-boot-security.instructions.md) — authn/authz, CORS, endpoint exposure, secret safety
 - [Services](../../instructions/spring-boot-services.instructions.md) — business logic, Optional, delegation
 - [Testing](../../instructions/spring-boot-testing.instructions.md) — WebMvcTest, Mockito, test naming
+- [Podman Container](../../instructions/podman-container.instructions.md) — Containerfile, rootless runtime, hardening, compose safety

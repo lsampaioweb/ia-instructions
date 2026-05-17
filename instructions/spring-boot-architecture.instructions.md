@@ -5,6 +5,7 @@ applyTo: "**/*.java"
 
 # Spring Boot Architecture Conventions
 
+- Target the latest Java version, e.g: 25; use modern language features (Records, Pattern Matching) where applicable
 - Organize code by feature or domain, not by technical layer
 - Prefer packages like `user`, `product`, `order`, `config`, or `integration`, not generic `controller`, `service`, or `repository` root packages
 - Keep related classes together inside the same feature package, for example `UserController`, `UserService`, `UserMapper`, DTOs, and exceptions in `user/`
