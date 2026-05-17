@@ -6,6 +6,7 @@ applyTo: "**/*Service.java"
 # Spring Boot Service Conventions
 
 - Annotate service classes with `@Service`
+- Use a concrete service class by default; introduce a service interface only when multiple implementations are required
 - Prefer package-private service classes when they are only used inside the same feature package
 - Use constructor injection for dependencies; never use `@Autowired` field injection
 - Keep service classes responsible for business rules, orchestration, and delegation to the next layer

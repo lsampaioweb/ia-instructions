@@ -6,6 +6,7 @@ applyTo: "**/{*Security*,*Auth*,*Authorization*,*Jwt*}.java"
 # Spring Boot Security Conventions
 
 - Keep security rules centralized in dedicated security configuration classes
+- Use Spring Security 6+ Lambda DSL for `HttpSecurity` configuration; avoid chained `.and()`-style configurers
 - Deny by default; explicitly allow only required public endpoints
 - Use method-level authorization (`@PreAuthorize`) for business-sensitive operations
 - Never disable CSRF globally unless the service is strictly stateless and token-based

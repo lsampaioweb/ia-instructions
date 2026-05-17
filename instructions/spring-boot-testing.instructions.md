@@ -8,7 +8,8 @@ applyTo: "**/*Test.java"
 - Write tests at the narrowest scope that validates the behavior: unit tests for services, slice tests for controllers
 - Use `@WebMvcTest` for controller tests; it loads only the web layer and does not start a full application context
 - Use `@SpringBootTest` only for integration tests that require the full context; prefer slices otherwise
-- Mock all dependencies of the class under test with `@MockBean` (slice tests) or `@Mock` / `@InjectMocks` (unit tests)
+- For slice tests, prefer `@MockitoBean` to override context beans; use `@Mock` / `@InjectMocks` for unit tests
+- If a project is pinned to an older Spring Boot/Spring Framework baseline that does not support `@MockitoBean`, use `@MockBean` only as a compatibility fallback
 - Name test methods to describe behavior: `{method}_when{Condition}_should{Outcome}` (e.g. `findById_whenUserNotFound_shouldReturn404`)
 - Assert on the response status, response body, and headers; do not assert on internal implementation details
 - Keep each test focused on a single behavior; one assertion per test is a guideline, not a strict rule
@@ -23,7 +24,7 @@ class UserControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  @MockBean
+  @MockitoBean
   private UserService userService;
 
   @Test
