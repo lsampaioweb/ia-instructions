@@ -11,23 +11,23 @@ All projects can share this single source of truth and stay synchronized with on
 ## Contents
 
 ### Agents (`.github/agents/`)
-Custom Copilot agents for multi-step workflows. Invoked via `/agent <name>` or discovered by description keywords.
+Custom Copilot agents for multi-step workflows. Usually auto-selected by intent; can also be invoked via `/agent <name>`.
 
 ### Instructions (`.github/instructions/`)
 File-specific coding conventions applied automatically via `applyTo` patterns (e.g., `**/*.java`).
 
 ### Prompts (`.github/prompts/`)
-Single-task Copilot prompts with parameterized inputs. Invoked via `/prompt <name>`.
+Single-task Copilot prompts with parameterized inputs. Optional convenience entry points; can be invoked via `/prompt <name>`.
 
 ### Skills (`.github/skills/`)
-Bundles conventions, procedures, and known failure modes. Invoked via `/skill <name>` or discovered by description keywords.
+Domain orchestrators that route implementation and review flow to canonical instruction files. Usually discovered by intent; can be invoked via `/skill <name>`.
 
 | Skill | Status | Focus |
 |---|---|---|
+| `spring-boot` | ✅ Complete | Orchestration-first Spring workflow with layer-aware reviews and instruction-file routing. |
 | `ansible` | ✅ Complete | Task naming, FQCN modules, variable hygiene, handlers, security conventions. |
 | `bash` | 🚧 Draft | Script structure, error handling, shared libs. |
 | `packer` | 🚧 Draft | HCL2 templates, external variables, credentials. |
-| `spring-boot` | ✅ Complete | Maven, constructor injection, ResponseEntity, MyBatis, externalized secrets. |
 | `sql-postgresql` | 🚧 Draft | Static SQL, explicit predicates, one DB per service. |
 | `terraform` | 🚧 Draft | Provider pinning, typed variables, module contracts. |
 | `traefik` | 🚧 Draft | Host-based routing, TLS, internal domains. |
@@ -81,6 +81,18 @@ After installation, VS Code Copilot will auto-discover:
 - **Prompts** at `.github/prompts/*.prompt.md` — Invoke with `/prompt <name>`
 - **Instructions** at `.github/instructions/*.instructions.md` — Applied automatically to matching files
 - **Skills** at `.github/skills/<name>/SKILL.md` — Invoke with `/skill <name>`
+
+### Recommended interaction model
+
+Use natural language as the default workflow:
+
+- "Review my code in this controller"
+- "Add a new endpoint for user search"
+- "Refactor this service method"
+
+In these cases, Copilot should infer intent, apply matching instruction files automatically, and use skills for orchestration.
+
+Use slash commands (`/agent`, `/prompt`, `/skill`) only when you explicitly want to force a specific entry point.
 
 ## Updating
 
