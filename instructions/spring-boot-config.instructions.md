@@ -79,3 +79,58 @@ logging:
 - All secrets must use `${ENV_VAR}` syntax in configuration files
 - Never commit real credentials to any configuration file, even in comments
 - Document required environment variables in the project `README.md`
+
+## Virtual Threads
+
+Enable virtual threads for all production services unless the service has code that is incompatible with virtual threads (e.g. `ThreadLocal`-heavy frameworks that assume platform threads):
+
+```yaml
+spring:
+  threads:
+    virtual:
+      enabled: true
+```
+
+## DataSource and HikariCP
+
+```yaml
+spring:
+  datasource:
+    driver-class-name: "org.postgresql.Driver"
+    url: "jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME}"
+    username: "${DB_USER}"
+    password: "${DB_PASSWORD}"
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      connection-timeout: 20000
+```
+
+## Actuator
+
+Expose only the endpoints needed per profile. Never expose all endpoints in production:
+
+```yaml
+# application-development.yml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics,info"
+  endpoint:
+    health:
+      show-details: "always"
+```
+
+```yaml
+# application-production.yml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "never"
+```

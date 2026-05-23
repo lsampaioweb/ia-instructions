@@ -1,6 +1,6 @@
 ---
 description: "Use when creating or reviewing Spring Boot security configuration, authentication, authorization, CORS, and endpoint protection. Covers safe defaults, secrets, and public endpoint exposure."
-applyTo: "**/{*Security*,*Auth*,*Authorization*,*Jwt*}.java"
+applyTo: "**/{*Security*,*Auth*,*Authorization*,*Jwt*,*Filter*}.java"
 ---
 
 # Spring Boot Security Conventions
@@ -22,3 +22,51 @@ applyTo: "**/{*Security*,*Auth*,*Authorization*,*Jwt*}.java"
 - Authorization checked on admin or cross-tenant operations
 - Public endpoint list is minimal and documented in config
 - No hardcoded keys, passwords, or tokens in code or YAML
+
+## SecurityFilterChain Example
+
+```java
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
+public class SecurityConfig {
+
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(csrf -> csrf.disable())
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/v1/auth/**", "/actuator/health").permitAll()
+            .anyRequest().authenticated()
+        )
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
+    return http.build();
+  }
+
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOrigins(List.of("${ALLOWED_ORIGIN}"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return source;
+  }
+}
+```
+
+## @PreAuthorize Examples
+
+```java
+// Role-based access control
+@PreAuthorize("hasRole('ADMIN')")
+public void deleteUser(Long id) { ... }
+
+// Combined role and ownership check
+@PreAuthorize("hasRole('USER') and #userId == authentication.principal.id")
+public UserResponse findById(Long userId) { ... }
+```

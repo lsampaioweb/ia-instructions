@@ -1,5 +1,5 @@
 ---
-description: "Use when creating or reviewing Spring Boot tests. Covers slice testing with @WebMvcTest and @MybatisTest, unit tests with Mockito, test naming, and what each test scope should cover."
+description: "Use when creating or reviewing Spring Boot tests. Covers slice testing with @WebMvcTest and @MybatisTest, unit tests with Mockito, repository tests, exception handler tests, test naming, and what each test scope should cover."
 applyTo: "**/*Test.java"
 ---
 
@@ -14,6 +14,9 @@ applyTo: "**/*Test.java"
 - Assert on the response status, response body, and headers; do not assert on internal implementation details
 - Keep each test focused on a single behavior; one assertion per test is a guideline, not a strict rule
 - Do not share mutable state between tests; reset mocks in `@BeforeEach` if needed
+- Use AssertJ (`assertThat`) for all assertions; avoid raw JUnit `assertEquals`
+- Use `@ActiveProfiles("test")` when tests need a specific profile to avoid loading production configuration
+- Use `@BeforeEach` to set up test fixtures; keep each fixture minimal and scoped to the test class
 
 ## Controller Test Example (`@WebMvcTest`)
 
@@ -84,6 +87,61 @@ class UserServiceTest {
 
     assertThatThrownBy(() -> userService.create(request))
         .isInstanceOf(UserAlreadyExistsException.class);
+  }
+}
+```
+
+## Repository Test Example (MyBatis)
+
+Use `@MybatisTest` to load only the MyBatis slice. It auto-configures an in-memory datasource by default; use `@AutoConfigureTestDatabase(replace = NONE)` when you need a real database.
+
+```java
+@MybatisTest
+class UserMapperTest {
+
+  @Autowired
+  private UserMapper userMapper;
+
+  @Test
+  void findById_whenUserExists_shouldReturnUser() {
+    User user = userMapper.findById(1L);
+
+    assertThat(user).isNotNull();
+    assertThat(user.getName()).isEqualTo("user-01");
+  }
+
+  @Test
+  void findById_whenUserNotFound_shouldReturnNull() {
+    User user = userMapper.findById(999L);
+
+    assertThat(user).isNull();
+  }
+}
+```
+
+## Exception Handler Test Example
+
+Test the `@RestControllerAdvice` by triggering domain exceptions through `@WebMvcTest`. Assert on the HTTP status, `ErrorResponse` structure, and response body — not on internal exception state.
+
+```java
+@WebMvcTest(UserController.class)
+class ExceptionHandlingAdviceTest {
+
+  @Autowired
+  private MockMvc mockMvc;
+
+  @MockitoBean
+  private UserService userService;
+
+  @Test
+  void findById_whenUserNotFound_shouldReturn404WithErrorBody() throws Exception {
+    given(userService.findById(99L)).willThrow(new UserNotFoundException(99L));
+
+    mockMvc.perform(get("/api/v1/users/99"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.message").exists())
+        .andExpect(jsonPath("$.path").value("/api/v1/users/99"));
   }
 }
 ```

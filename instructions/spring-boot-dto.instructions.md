@@ -1,5 +1,5 @@
 ---
-description: "Use when creating or reviewing Spring Boot request/response DTOs and domain model classes. Covers DTO design, Lombok usage, Bean Validation annotations, and records vs classes."
+description: "Use when creating or reviewing Spring Boot request/response DTOs. Covers DTO design, Lombok usage, Bean Validation annotations, and records vs classes."
 applyTo: "**/{*Request,*Response,*DTO,*Dto}.java"
 ---
 
@@ -13,6 +13,8 @@ applyTo: "**/{*Request,*Response,*DTO,*Dto}.java"
 - Do not annotate response DTOs with validation constraints; validation applies only to input
 - Keep DTO constructors and accessors consistent: records provide them automatically; for classes, use Lombok
 - Do not add business logic to DTOs; they are pure data transfer structures
+- Annotate response DTO classes with `@JsonInclude(JsonInclude.Include.NON_NULL)` to omit null fields from JSON output
+- Use a `static from(Entity entity)` factory method on response DTOs to encapsulate the entity-to-DTO mapping
 
 ## Request DTO Examples
 

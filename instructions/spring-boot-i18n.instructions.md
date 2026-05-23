@@ -1,6 +1,6 @@
 ---
 description: "Use when creating or reviewing Spring Boot i18n configuration, MessageSource usage, locale resolution, or message properties files. Covers message file structure, locale resolution, MessageSourceHolder, and controller usage."
-applyTo: "**/{*MessageSource*,*LocaleResolver*,*i18n*}.java"
+applyTo: "**/*.java"
 ---
 
 # Spring Boot i18n Conventions
@@ -54,3 +54,25 @@ user.notfound=User with id "{0}" was not found.
 user.exists=User with name "{0}" and email "{1}" already exists.
 method.called=The method "{0}" was called.
 ```
+
+## MessageSourceHolder (Static Accessor)
+
+Use `MessageSourceHolder` to resolve messages in contexts where constructor injection is not available, such as inside domain exceptions or infrastructure utilities. Do **not** use it as a replacement for injected `MessageSource` in controllers, services, or advice — those should use constructor injection.
+
+```java
+@Component
+public class MessageSourceHolder {
+
+  private static final AtomicReference<MessageSource> ref = new AtomicReference<>();
+
+  public MessageSourceHolder(MessageSource messageSource) {
+    ref.set(messageSource);
+  }
+
+  public static String getMessage(String key, Object... args) {
+    return ref.get().getMessage(key, args, LocaleContextHolder.getLocale());
+  }
+}
+```
+
+Do **not** call `MessageSourceHolder` from inside domain exceptions. Exceptions should store the message key and arguments; message resolution must happen at the HTTP boundary (in `@RestControllerAdvice`). See the exception-handling instructions for the correct pattern.

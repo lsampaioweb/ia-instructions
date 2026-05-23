@@ -19,6 +19,8 @@ applyTo: "**/{*Exception,*Advice,*ErrorResponse}.java"
 - Domain-specific exceptions pass the key, arguments, and status; message resolution happens in `@RestControllerAdvice`
 - Exceptions are pure data holders with no Spring/MessageSource dependencies
 
+> **Anti-pattern to avoid:** Do not call `MessageSourceHolder` or any `MessageSource` from inside an exception constructor. Resolving the message inside the exception couples domain code to Spring infrastructure, breaks unit testability, and resolves the locale at throw time (which may not match the request locale in async contexts). Always keep exceptions as plain data and resolve messages in the advice.
+
 ## ErrorResponse Structure
 
 ```java

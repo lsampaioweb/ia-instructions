@@ -60,3 +60,62 @@ class UserService {
   }
 }
 ```
+
+## Logback Configuration
+
+- Store the logback config at `resources/log/logback-spring.xml`; reference it in `application.yml` as `logging.config: classpath:log/logback-spring.xml`
+- Use `<springProperty>` to read `spring.application.name` and `logging.file.path` from the Spring environment
+- Use a `ConsoleAppender` with color patterns for local development
+- Use a `RollingFileAppender` wrapped in an `AsyncAppender` for file output; cap each file at 100 MB, keep 1 day of history, and set a 1 GB total size cap
+- Define log levels per Spring profile using `<springProfile>`: `DEBUG` for the `debug` profile, `INFO` for `development` and `default`, `INFO` to file only for `production`
+
+```xml
+<!-- resources/log/logback-spring.xml -->
+<configuration>
+  <springProperty scope="context" source="spring.application.name" name="APPLICATION_NAME" />
+  <springProperty scope="context" source="logging.file.path" name="LOG_DIR" defaultValue="./logs" />
+
+  <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <Pattern>%black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%logger{60}): %msg%n%throwable</Pattern>
+    </encoder>
+  </appender>
+
+  <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_DIR}/${APPLICATION_NAME}.log</file>
+    <encoder>
+      <Pattern>%d{ISO8601} %-5level [%t] %logger{60}: %msg%n%throwable</Pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_DIR}/archived/${APPLICATION_NAME}-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+      <maxFileSize>100MB</maxFileSize>
+      <maxHistory>1</maxHistory>
+      <totalSizeCap>1GB</totalSizeCap>
+    </rollingPolicy>
+  </appender>
+
+  <appender name="File" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="RollingFile" />
+  </appender>
+
+  <springProfile name="debug">
+    <root level="DEBUG">
+      <appender-ref ref="Console" />
+      <appender-ref ref="File" />
+    </root>
+  </springProfile>
+
+  <springProfile name="default | development">
+    <root level="INFO">
+      <appender-ref ref="Console" />
+      <appender-ref ref="File" />
+    </root>
+  </springProfile>
+
+  <springProfile name="production">
+    <root level="INFO">
+      <appender-ref ref="File" />
+    </root>
+  </springProfile>
+</configuration>
+```

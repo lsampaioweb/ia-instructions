@@ -80,3 +80,54 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
 ```
+
+## JdbcClient (Spring Boot Native Alternative)
+
+- Use `JdbcClient` when MyBatis is not available or when the project uses `spring-boot-starter-jdbc` directly
+- Declare it as a `@Bean` in a `@Configuration` class; Spring Boot auto-configures the `DataSource`
+- Use named parameters (`:name`) for all queries
+- Return `Optional` from single-row queries using `.optional()`; throw domain exceptions in `orElseThrow`
+- Use `@Transactional` on methods that execute multiple writes that must succeed or fail together
+- Never swallow exceptions; wrap unexpected JDBC failures in a domain-level exception
+
+```java
+@Configuration
+public class JdbcClientConfig {
+  @Bean
+  public JdbcClient jdbcClient(DataSource dataSource) {
+    return JdbcClient.create(Objects.requireNonNull(dataSource));
+  }
+}
+```
+
+```java
+@Slf4j
+@Repository
+class UserRepository {
+
+  private final JdbcClient jdbcClient;
+
+  UserRepository(JdbcClient jdbcClient) {
+    this.jdbcClient = jdbcClient;
+  }
+
+  Optional<User> findById(Long id) {
+    return jdbcClient
+        .sql("SELECT id, name, email FROM users WHERE id = :id")
+        .param("id", id)
+        .query(User.class)
+        .optional();
+  }
+
+  @Transactional
+  void saveAll(List<User> users) {
+    String sql = "INSERT INTO users (name, email) VALUES (:name, :email)";
+    for (User user : users) {
+      jdbcClient.sql(sql)
+          .param("name", user.getName())
+          .param("email", user.getEmail())
+          .update();
+    }
+  }
+}
+```

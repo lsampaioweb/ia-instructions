@@ -19,6 +19,7 @@ applyTo: "**/*.java"
 - Keep helper methods `private` unless another class in the same package genuinely needs them
 - If a class is only used inside one feature package, keep it package-private
 - Prefer architecture that helps the package enforce the design, not architecture that depends only on team discipline
+- Use constructor injection for all Spring-managed dependencies; never use `@Autowired` field injection
 
 ## Example Structure
 

@@ -1,12 +1,11 @@
 ---
-description: "Use when creating or reviewing Spring Boot REST controllers. Covers constructor injection, ResponseEntity, request mapping, pagination, and service delegation."
+description: "Use when creating or reviewing Spring Boot REST controllers. Covers ResponseEntity, request mapping, pagination, and service delegation."
 applyTo: "**/*Controller.java"
 ---
 
 # Spring Boot Controller Conventions
 
 - Annotate with `@RestController` and `@RequestMapping("/api/v1/{resource}")`
-- Use constructor injection; never `@Autowired` field injection
 - Return `ResponseEntity<T>` with explicit HTTP status on every endpoint
 - Keep controllers thin: delegate all business logic to the `@Service` layer
 - Use `Optional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build())` for single-resource GET
