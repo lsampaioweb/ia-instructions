@@ -9,7 +9,7 @@ agent: "agent"
 
 Review the provided Spring Boot code using these conventions:
 
-- [Behavior Baseline](~/.copilot/instructions/copilot-behavior.instructions.md)
+- [Behavior Baseline](~/.copilot/instructions/copilot-instructions.md)
 - [Spring Boot Skill](~/.copilot/skills/spring-boot/SKILL.md)
 
 Use the Spring Boot skill as the canonical source for all Spring-specific rules and linked instruction files.

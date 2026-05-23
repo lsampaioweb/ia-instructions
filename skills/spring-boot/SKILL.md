@@ -19,7 +19,7 @@ argument-hint: 'Touched files, target layer(s), and requested action (implement,
 
 ## Programming Flow
 1. Identify touched files and active layer (controller, service, repository, config, DTO, advice, test).
-2. Apply global behavior from `copilot-behavior.instructions.md`.
+2. Apply global behavior from `copilot-instructions.md`.
 3. Apply matching Spring instruction files by `applyTo` pattern.
 4. Implement or review only one executable step per turn.
 5. Validate cross-layer flow (controller -> service -> repository or integration client).
@@ -44,7 +44,7 @@ argument-hint: 'Touched files, target layer(s), and requested action (implement,
 
 These instruction files are applied automatically to matching files and cover additional conventions:
 
-- [Behavior Baseline](../../instructions/copilot-behavior.instructions.md) — response shape, token reduction, anti-hallucination
+- [Behavior Baseline](../../instructions/copilot-instructions.md) — response shape, token reduction, anti-hallucination
 - [Architecture](../../instructions/spring-boot-architecture.instructions.md) — package-by-feature, visibility, dependency flow
 - [Configuration](../../instructions/spring-boot-config.instructions.md) — ConfigurationProperties, secrets, profiles
 - [Controllers](../../instructions/spring-boot-controllers.instructions.md) — ResponseEntity, DTOs, HTTP semantics

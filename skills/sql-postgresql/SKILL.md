@@ -45,5 +45,5 @@ Check for these recurring anti-patterns before producing output:
 
 These instruction files are applied automatically to matching files and cover additional conventions:
 
-- [Behavior Baseline](../../instructions/copilot-behavior.instructions.md) — response shape, token reduction, anti-hallucination
+- [Behavior Baseline](../../instructions/copilot-instructions.md) — response shape, token reduction, anti-hallucination
 - [SQL Database Design](../../instructions/sql-postgresql-design.instructions.md) — object naming, key/index standards, domain prefixes, legacy exceptions, and formal data dictionary rules
