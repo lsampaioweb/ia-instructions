@@ -10,7 +10,6 @@ argument-hint: 'Touched files, target layer(s), and requested action (implement,
 - Creating or reviewing Spring Boot services and APIs.
 - Enforcing architecture boundaries in microservices.
 - Hardening configuration, security, and observability setup.
-- Implementing async event-driven flows with RabbitMQ.
 
 ## Ownership Model
 - This skill orchestrates task flow and review sequence.
@@ -28,10 +27,11 @@ argument-hint: 'Touched files, target layer(s), and requested action (implement,
 ## Review Checklist
 - Validate dependency direction and visibility against Architecture and Services instructions.
 - Validate HTTP semantics, DTO boundaries, and response patterns against Controllers and DTO instructions.
-- Validate mapper usage and SQL placement against Repositories instructions.
+- Validate mapper usage, SQL placement, transaction boundaries, and null handling against Repositories instructions.
 - Validate error contract and status propagation against Exception Handling instructions.
 - Validate configuration style and secret externalization against Configuration instructions.
 - Validate authentication, authorization, CORS, and secret handling against Security instructions.
+- Validate message key usage, locale resolution, and MessageSourceHolder boundaries against i18n instructions.
 - Validate logging hygiene and PII handling against Logging instructions.
 - Validate test scope and naming against Testing instructions.
 - Validate container hardening and runtime defaults against Podman Container instructions when container files are touched.
@@ -46,13 +46,13 @@ These instruction files are applied automatically to matching files and cover ad
 
 - [Behavior Baseline](../../instructions/copilot-instructions.md) — response shape, token reduction, anti-hallucination
 - [Architecture](../../instructions/spring-boot-architecture.instructions.md) — package-by-feature, visibility, dependency flow
-- [Configuration](../../instructions/spring-boot-config.instructions.md) — ConfigurationProperties, secrets, profiles
+- [Configuration](../../instructions/spring-boot-config.instructions.md) — ConfigurationProperties, secrets, profiles, virtual threads, HikariCP, actuator
 - [Controllers](../../instructions/spring-boot-controllers.instructions.md) — ResponseEntity, DTOs, HTTP semantics
 - [DTOs](../../instructions/spring-boot-dto.instructions.md) — request/response DTOs, Lombok, Bean Validation
 - [Exception Handling](../../instructions/spring-boot-exception-handling.instructions.md) — RestControllerAdvice, ErrorResponse
 - [i18n](../../instructions/spring-boot-i18n.instructions.md) — MessageSource, locale resolution
 - [Logging](../../instructions/spring-boot-logging.instructions.md) — Slf4j, log levels, PII
-- [Repositories](../../instructions/spring-boot-repositories.instructions.md) — MyBatis mappers, XML files, null handling
+- [Repositories](../../instructions/spring-boot-repositories.instructions.md) — MyBatis mappers, XML files, null handling, JdbcClient alternative, transaction control
 - [Security](../../instructions/spring-boot-security.instructions.md) — authn/authz, CORS, endpoint exposure, secret safety
 - [Services](../../instructions/spring-boot-services.instructions.md) — business logic, Optional, delegation
 - [Testing](../../instructions/spring-boot-testing.instructions.md) — WebMvcTest, Mockito, test naming
