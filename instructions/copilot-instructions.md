@@ -17,6 +17,8 @@ applyTo: "**"
 ## Output Discipline
 
 - Show only impacted code blocks unless full file output is explicitly requested.
+- When omitting unchanged code, use a language-appropriate comment with the text `... existing code ...`.
+- Always include new import or require statements needed for the added code to work.
 - Keep explanations short and decision-focused.
 - Include assumptions only when they materially affect correctness.
 - Provide a short completion summary only after completing a multi-step task or editing more than one file.
