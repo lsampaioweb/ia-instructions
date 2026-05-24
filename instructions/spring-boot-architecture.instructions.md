@@ -6,6 +6,7 @@ applyTo: "**/*.java"
 # Spring Boot Architecture Conventions
 
 - Target the latest Java version, e.g: 25; use modern language features (Records, Pattern Matching) where applicable
+- Use 2 spaces for indentation; do not use tabs;
 - Organize code by feature or domain, not by technical layer
 - Prefer packages like `user`, `product`, `order`, `config`, or `integration`, not generic `controller`, `service`, or `repository` root packages
 - Keep related classes together inside the same feature package, for example `UserController`, `UserService`, `UserMapper`, DTOs, and exceptions in `user/`
@@ -20,6 +21,39 @@ applyTo: "**/*.java"
 - If a class is only used inside one feature package, keep it package-private
 - Prefer architecture that helps the package enforce the design, not architecture that depends only on team discipline
 - Use constructor injection for all Spring-managed dependencies; never use `@Autowired` field injection
+
+## Project Directory Layout
+
+Non-Java project files belong at the **project root** (same level as `pom.xml`), never inside `src/`:
+
+```text
+project-root/
+├── .dockerignore
+├── .env
+├── .gitignore
+├── docker-compose.yml
+├── Dockerfile
+├── pom.xml
+├── README.md
+├── logs/
+│   └── container/
+│       └── .keep
+├── ssl/
+│   └── .keep
+└── src/
+    ├── main/
+    │   ├── java/
+    │   └── resources/
+    │       ├── application.yml
+    │       ├── application-development.yml
+    │       ├── application-production.yml
+    │       ├── i18n/
+    │       │   └── messages.properties
+    │       └── log/
+    │           └── logback-spring.xml
+    └── test/
+        └── java/
+```
 
 ## Example Structure
 

@@ -14,7 +14,6 @@ argument-hint: 'Touched files, target layer(s), and requested action (implement,
 ## Ownership Model
 - This skill orchestrates task flow and review sequence.
 - Spring rules are owned by the instruction files listed below.
-- Keep this skill stable and short; update rule details in instruction files only.
 
 ## Programming Flow
 1. Identify touched files and active layer (controller, service, repository, config, DTO, advice, test).
@@ -25,6 +24,7 @@ argument-hint: 'Touched files, target layer(s), and requested action (implement,
 6. Report findings or changes with exact file references and stop for confirmation when needed.
 
 ## Review Checklist
+- Validate parent version, groupId, Java version, dependencies, and plugins against pom.xml instructions.
 - Validate dependency direction and visibility against Architecture and Services instructions.
 - Validate HTTP semantics, DTO boundaries, and response patterns against Controllers and DTO instructions.
 - Validate mapper usage, SQL placement, transaction boundaries, and null handling against Repositories instructions.
@@ -40,7 +40,7 @@ argument-hint: 'Touched files, target layer(s), and requested action (implement,
 - Do not introduce hidden cross-service database access.
 - Do not expose internal service ports publicly when reverse proxy routing exists.
 
-## Instruction Files
+## Instruction Files to use
 
 These instruction files are applied automatically to matching files and cover additional conventions:
 
@@ -52,6 +52,7 @@ These instruction files are applied automatically to matching files and cover ad
 - [Exception Handling](../../instructions/spring-boot-exception-handling.instructions.md) — RestControllerAdvice, ErrorResponse
 - [i18n](../../instructions/spring-boot-i18n.instructions.md) — MessageSource, locale resolution
 - [Logging](../../instructions/spring-boot-logging.instructions.md) — Slf4j, log levels, PII
+- [pom.xml](../../instructions/spring-boot-pom.instructions.md) — parent version, groupId, Java version, required dependencies, Logback pinning
 - [Repositories](../../instructions/spring-boot-repositories.instructions.md) — MyBatis mappers, XML files, null handling, JdbcClient alternative, transaction control
 - [Security](../../instructions/spring-boot-security.instructions.md) — authn/authz, CORS, endpoint exposure, secret safety
 - [Services](../../instructions/spring-boot-services.instructions.md) — business logic, Optional, delegation

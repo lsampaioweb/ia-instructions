@@ -6,7 +6,8 @@ applyTo: "**/{*Config,*Configuration,*Properties}.java"
 # Spring Boot Configuration Conventions
 
 - Use `application.yml` as the primary configuration file; avoid `application.properties`
-- Use profile-specific override files (`application-dev.yml`, `application-prod.yml`) for environment differences
+- Always create three profile files: `application.yml` (shared defaults), `application-development.yml`, and `application-production.yml`; these three files are mandatory in every project
+- Use profile-specific override files (`application-development.yml`, `application-production.yml`) for environment differences
 - Prefer `@ConfigurationProperties` over `@Value` for groups of related settings; bind to a typed class
 - Use `@Value` only for a single isolated property that does not belong to a larger config group
 - Annotate `@ConfigurationProperties` classes with `@ConfigurationPropertiesScan` or register them explicitly
@@ -65,7 +66,7 @@ spring:
 ```
 
 ```yaml
-# application-dev.yml — dev overrides
+# application-development.yml — dev overrides
 server:
   error:
     include-stacktrace: always

@@ -9,11 +9,10 @@ agent: "agent"
 
 Review the provided Spring Boot code using these conventions:
 
-- [Spring Boot Skill](~/.copilot/skills/spring-boot/SKILL.md)
+Follow all conventions from:
 
-Use the Spring Boot skill as the canonical source for all Spring-specific rules and linked instruction files.
-
-Perform a strict review.
+<!-- Path traverses 6 levels up from ~/.config/Code/User/profiles/HASH/prompts/ to reach ~/ -->
+- [Spring Boot Skill](./../../../../../../.copilot/skills/spring-boot/SKILL.md)
 
 ## Output
 

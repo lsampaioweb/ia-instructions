@@ -11,7 +11,8 @@ Apply the requested endpoint operation across all affected layers.
 
 Follow all conventions from:
 
-- [Spring Boot Skill](~/.copilot/skills/spring-boot/SKILL.md)
+<!-- Path traverses 6 levels up from ~/.config/Code/User/profiles/HASH/prompts/ to reach ~/ -->
+- [Spring Boot Skill](./../../../../../../.copilot/skills/spring-boot/SKILL.md)
 
 ## Scope
 
