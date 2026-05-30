@@ -1,6 +1,5 @@
 ---
 description: "Code review for Spring Boot projects: verify all instruction file rules are followed."
-agent: agent
 ---
 
 Review the files that were changed in the current context. If the user explicitly requests a full project review, review all source files.
