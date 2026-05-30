@@ -11,8 +11,9 @@ Generate the following files in order, adhering to all conventions:
 ## Instruction Files
 `spring-boot-*.instructions.md`
 
-If any required confirmation item is missing, ask for it before generating code. Mention the specific instruction file and rule that requires the missing information.
-Example confirmation items:
+Before generating any code, confirm all of the following. Ask for every missing item before proceeding:
+- **Project already initialized?** — if not, generate `pom.xml` via Spring Initializr conventions per `spring-boot-pom.instructions.md` before any other file
 - **Domain object name** (e.g. `User`)
 - **Base package** (e.g. `com.example`)
 - **Fields** — list each field as `name: type [validations]`, e.g. `email: String [@NotBlank, @Email]`, `age: Integer [@Min(0)]`
+- **Database?** — yes or no; only generate repository, XML mapper, and schema SQL files when the answer is yes
