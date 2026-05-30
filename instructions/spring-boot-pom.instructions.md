@@ -40,3 +40,19 @@ Every Spring Boot project must declare `spring-boot-starter-parent` as the Maven
 ## Plugins
 - Do not add `spring-boot-maven-plugin` configuration unless you need to change a specific default
 - Keep plugin configuration minimal and documented when present
+- When using Java 23 or later, explicitly declare Lombok in `<annotationProcessorPaths>` inside `maven-compiler-plugin`; Java 23+ removed implicit annotation processor discovery, so without this `@Slf4j`, `@Data`, and all other Lombok annotations will fail to compile:
+
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <configuration>
+    <annotationProcessorPaths>
+      <path>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+      </path>
+    </annotationProcessorPaths>
+  </configuration>
+</plugin>
+```

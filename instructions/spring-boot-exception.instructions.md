@@ -8,8 +8,8 @@ applyTo: "**/*Exception.java, **/*ControllerAdvice.java, **/*ExceptionHandler.ja
 ## @RestControllerAdvice
 - One single `@RestControllerAdvice` class handles all exceptions for the entire application
 - Always include a catch-all `@ExceptionHandler(Exception.class)` handler mapped to HTTP 500
-- Handle `MethodArgumentNotValidException` separately; return field-level validation errors in `ErrorResponse`
-- Never expose stack traces by default; control exposure via `server.error.include-stacktrace` in `application.yml` (enabled only in the development profile)
+- Handle `MethodArgumentNotValidException` separately; return a list of `{field, message}` records — one per validation failure — not a single `ErrorResponse`
+- Never expose stack traces by default; set `server.error.include-stacktrace: "never"` in `application.yml` and `server.error.include-stacktrace: "always"` in `application-development.yml`
 
 ## Domain Exceptions
 - All domain exceptions extend a shared abstract base class that extends `RuntimeException`
@@ -19,6 +19,6 @@ applyTo: "**/*Exception.java, **/*ControllerAdvice.java, **/*ExceptionHandler.ja
 - Exceptions are plain data holders; do not call `MessageSource` or any Spring infrastructure from inside an exception constructor
 
 ## ErrorResponse
-- Every exception handler returns the same `ErrorResponse` DTO
-- `ErrorResponse` contains at minimum: resolved message (looked up from messages.properties by `messageKey`), HTTP status, and timestamp
-- The resolved message is always locale-aware; the same exception may return different text depending on the `Accept-Language` header
+- Every exception handler (except the `MethodArgumentNotValidException` handler) returns the same `ErrorResponse` DTO
+- `ErrorResponse` fields: `timestamp` (LocalDateTime), `status` (int), `error` (HTTP reason phrase), `message` (resolved i18n string), `path` (request URI), `trace` (stack trace string, null when not exposed)
+- The `message` field is always locale-aware; the same exception may return different text depending on the `Accept-Language` header

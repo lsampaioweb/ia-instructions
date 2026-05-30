@@ -41,3 +41,14 @@ See `spring-boot-architecture.instructions.md` for the constant naming rule.
 - Full request or response bodies that may contain PII
 - Stack traces at `INFO` or `DEBUG` level; reserve those for `ERROR`
 - Inside tight loops or high-throughput paths without a level guard: `if (log.isDebugEnabled())`
+
+## Logback Configuration
+Place `logback-spring.xml` under `src/main/resources/log/`. Configure profile-based appenders:
+
+- `development` profile: console appender + async file appender at `DEBUG` level
+- `production` and default profiles: async file appender only at `INFO` level
+
+File rotation settings:
+- `maxFileSize`: 100MB
+- `totalSizeCap`: 1GB
+- `maxHistory`: 1 (days to retain)
