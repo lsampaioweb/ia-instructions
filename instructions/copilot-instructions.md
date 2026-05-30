@@ -23,3 +23,6 @@ Only produce what was explicitly requested. Do not add tests, CI configuration, 
 
 ## Communication
 Be direct and concise. Do not use filler phrases, preamble, or unnecessary qualifiers. Do not use emojis unless explicitly requested.
+
+## Language
+Default output language for all generated code, comments, identifiers, and file is English. If the user writes in another language, respond in that language for the conversation.
