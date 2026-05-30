@@ -7,10 +7,23 @@ applyTo: "**/*.java"
 
 - Use `@Slf4j` (Lombok) on every class that logs; never declare `private static final Logger` manually
 - Never hardcode message text as string literals in log statements; all log message templates must be defined in `messages.properties` and resolved by key before being passed to the logger
-- Resolve log message keys via a project-level `LogMessages` utility that calls `messageSource.getMessage(key, args, Locale.ENGLISH)` — logs are developer-facing and always in English; inject this utility via constructor
+- Resolve log message keys via a project-level `LogMessages` utility; inject it via constructor
+- Implement `LogMessages` with two overloads so callers never specify a locale — the no-locale overload delegates to the locale-aware one with `Locale.ENGLISH`; logs are always developer-facing and always in English:
+
+```java
+public String get(String key, Object... args) {
+  return get(Locale.ENGLISH, key, args);
+}
+
+public String get(Locale locale, String key, Object... args) {
+  return messageSource.getMessage(key, args, locale);
+}
+```
 
 Example of what NOT to do: `log.debug("User {} not found", id)`
-Example of what to do: `log.debug(logMessages.get("user.not.found", id))`
+Example of what to do: `log.debug(logMessages.get(LOG_USER_NOT_FOUND, id))`
+
+See `spring-boot-architecture.instructions.md` for the constant naming rule.
 
 ## Log Levels
 

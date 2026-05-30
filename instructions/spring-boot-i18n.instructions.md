@@ -8,6 +8,7 @@ applyTo: "**/i18n/**, **/messages*.properties, **/*LocaleConfig.java"
 ## File Layout
 - Store all message files under `src/main/resources/i18n/`
 - `messages.properties` (English) and `messages_pt_BR.properties` (Portuguese) are required in every project; additional locales are optional
+- All message files are UTF-8 encoded; write non-ASCII characters directly (e.g. `Usuário`, `não`) — never use Unicode escape sequences (e.g. `\u00e1`)
 
 ## Configuration
 Configure the basename in `application.yml`:

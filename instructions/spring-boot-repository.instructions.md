@@ -23,3 +23,4 @@ Never use JPA, Hibernate, Spring Data JPA, or any ORM abstraction. Do not extend
 ## General
 - No business logic in repositories; data access only
 - Keep repository and mapper classes package-private when used only within the same feature package
+- Place schema and seed SQL files under `src/main/resources/sql/`; do not place them in the root of `src/main/resources/`

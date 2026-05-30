@@ -41,6 +41,25 @@ Define interfaces for services and any component that may have multiple implemen
 ## Code Style
 - 2 spaces for indentation; never use tabs
 - Use modern Java features where the project's Java version supports them: records, pattern matching, sealed classes, text blocks
+- Add a blank line before every `return` statement unless the method body is a single expression
+- Separate logically distinct blocks within a method body with a blank line (e.g. between validation, data retrieval, transformation, and return)
+- Do not add a blank line after every single statement; use spacing to group related lines, not to isolate them
+
+## Constants
+- Declare i18n key strings as `private static final String` constants at the top of the class; never pass key literals inline
+- Name constants in `UPPER_SNAKE_CASE` that describes the message, not the key string value
+
+Bad:
+```java
+log.debug(logMessages.get("log.user.find.all"));
+```
+
+Good:
+```java
+private static final String LOG_USER_FIND_ALL = "log.user.find.all";
+
+log.debug(logMessages.get(LOG_USER_FIND_ALL));
+```
 
 ## Hardcoded Text
 Never hardcode human-readable text (messages, labels, error descriptions) as string literals in Java code. All text must be defined in `messages.properties` and referenced by its i18n key. See `spring-boot-logging.instructions.md` for how this applies to log statements.
