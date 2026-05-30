@@ -1,0 +1,24 @@
+---
+description: "Maven POM rules: spring-boot-starter-parent, no hardcoded managed versions, dependency ordering, and BOM usage."
+applyTo: "**/pom.xml"
+---
+
+# Maven POM Rules
+
+## Parent
+Every Spring Boot project must declare `spring-boot-starter-parent` as the Maven parent. This gives you managed dependency versions, plugin configuration, and sensible defaults.
+
+## Versions
+- Do not hardcode versions for any dependency managed by `spring-boot-starter-parent` or a BOM already imported
+- Declare versions in a `<properties>` block when a version must be explicit (third-party libraries not managed by the parent)
+- Declare BOM imports via `<dependencyManagement>` using `import` scope; never copy-paste version numbers from a BOM into individual `<dependency>` entries
+
+## Dependencies
+- Add starters rather than individual Spring Framework or Spring Boot jars
+- Common ordering (alphabetically within groups): Spring starters → production libraries → optional/runtime → test-only
+- Declare `spring-boot-devtools` with `<scope>runtime</scope>` and `<optional>true</optional>`; it must never be packaged in the production artifact
+- Declare `spring-boot-starter-test` and `mockito-core` with `<scope>test</scope>`
+
+## Plugins
+- Do not add `spring-boot-maven-plugin` configuration unless you need to change a specific default
+- Keep plugin configuration minimal and documented when present
