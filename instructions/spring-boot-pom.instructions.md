@@ -5,6 +5,21 @@ applyTo: "**/pom.xml"
 
 # Maven POM Rules
 
+## Project Coordinates
+- `groupId`: use `io.github.lsampaioweb` as the default unless the user specifies a different groupId
+- `artifactId`: project name in kebab-case (e.g. `proxmox-installer-endpoint`)
+- `version`: start at `0.0.1-SNAPSHOT` for new projects
+- `name`: human-readable title in title case (e.g. `Proxmox Installer Endpoint`)
+
+## Java Version
+Always use the latest GA release of Java. Set it via the `<java.version>` property managed by `spring-boot-starter-parent`:
+
+```xml
+<properties>
+  <java.version>25</java.version>
+</properties>
+```
+
 ## Parent
 Every Spring Boot project must declare `spring-boot-starter-parent` as the Maven parent. This gives you managed dependency versions, plugin configuration, and sensible defaults.
 
