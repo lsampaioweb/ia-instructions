@@ -19,3 +19,14 @@ Never hardcode credentials, tokens, or secrets in configuration files or code. S
 ## Organization
 - Keep each `@Configuration` class focused on one concern (security, messaging, persistence, web, etc.)
 - Each `@Configuration` class owns its own `@Bean` definitions; do not scatter beans across unrelated classes
+
+## Server
+- Always set `server.port` explicitly in `application.yml`; do not rely on the Spring Boot default of 8080
+- Enable virtual threads in `application.yml`:
+
+```yaml
+spring:
+  threads:
+    virtual:
+      enabled: true
+```

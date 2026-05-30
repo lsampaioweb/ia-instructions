@@ -27,3 +27,8 @@ Configure CORS with explicit allowed origins, methods, and headers. Never use wi
 
 ## Cryptography
 Never implement custom cryptography. Use approved Spring Security password encoders and providers.
+
+## SSL/TLS
+- Enable HTTPS in production via `server.ssl.*` in `application-production.yml`
+- Reference the keystore path and credentials from environment variables; never hardcode them in YAML
+- Set the minimum TLS version to `TLSv1.2`; prefer `TLSv1.3` where supported
